@@ -1,0 +1,379 @@
+SELECT 
+  name AS "Название товара", 
+  category AS "Категория" 
+FROM 
+  products;
+  select * from products;
+  SELECT 
+  name AS "Название товара", 
+  category AS "Категория", 
+  price as "Цена",
+  in_stock as "Количество"
+FROM 
+  products;
+  SELECT 
+  name AS "Название товара", 
+  price * in_stock as "В наличии на сумму"
+FROM 
+  products;
+  SELECT 
+  * 
+FROM 
+  orders 
+WHERE 
+  address = 'Казань' 
+  AND status != 'done' 
+  AND status != 'delivery';
+  SELECT 
+  * 
+FROM 
+  products 
+WHERE 
+  category = 'товары для дома';
+ SELECT name, price, in_stock FROM products WHERE price <= 500 AND in_stock > 3 OR price > 5000;
+ SELECT 
+  * 
+FROM 
+  orders 
+WHERE 
+  address = 'Казань' 
+  AND status NOT IN ('done', 'delivery');
+  SELECT 
+  * 
+FROM 
+  orders 
+WHERE 
+  status != 'done' 
+  AND address in ('Казань','Мурманск','Новосибирск');
+ 
+SELECT 
+  name 
+FROM 
+  clients 
+WHERE 
+  id IN (
+    SELECT 
+      client_id 
+    FROM 
+      orders 
+    WHERE 
+      address = 'Мурманск'
+  );
+select 
+  name 
+from 
+  clients 
+where 
+  id not in (
+    select 
+      client_id 
+    from 
+      orders
+  );
+  
+SELECT 
+  name 
+FROM 
+  products 
+WHERE 
+  id IN (
+    SELECT 
+      product_id 
+    FROM 
+      positions 
+    WHERE 
+    	order_id in (
+    	select 
+    	id 
+    	from
+    	orders
+    	where 
+      address = 'Москва')
+  );
+  SELECT 
+  current_date;
+  SELECT 
+  current_time;
+  SELECT 
+  extract(
+    'day' 
+    FROM 
+      (select
+      current_date)
+  );
+  select 
+  date as "Old date", 
+  date + 7 as "New date", 
+  date + interval '7 hour' as "New date with time" 
+from 
+  orders;
+  select 
+  current_date - 
+  (select 
+  max(date) 
+from 
+  orders);
+  select extract(
+    month from 
+      (
+        select 
+          max(date) 
+        from 
+          orders
+      )
+  );
+  select*from 
+  orders 
+where 
+  date > '2020-03-12';
+  select 
+  id, 
+  upper(name) 
+from 
+  clients 
+where 
+  id % 2 = 0;
+  select 
+  'Номер телефона ' || (name) || ': ' || (phone) as "Информация о клиенте" 
+from 
+  clients;
+  select 
+  'Номер телефона ' || name || ': ' || overlay(
+    phone placing 'xxx' 
+    from 
+      5 for 3
+  ) as "Информация о клиенте" 
+from 
+  clients;
+  select*from 
+  orders 
+where 
+  address like '%ск';
+  select 
+  name 
+from 
+  clients 
+where 
+  phone similar to ('%4{3,}%');
+  select 
+  * 
+from 
+  products 
+where 
+  category is null;
+  select 
+  category 
+from 
+  products;
+ select 
+  distinct category 
+from 
+  products 
+where 
+  category is not null;
+  select 
+  name 
+from 
+  products 
+where 
+  category = 'товары для дома' 
+order by 
+  price;
+  select 
+  avg(price) 
+from 
+  products;
+  select 
+  name 
+from 
+  products 
+where 
+  price = (
+    select 
+      max(price) 
+    from 
+      products
+  );
+  select 
+  address 
+from 
+  orders 
+group by 
+  address;
+  select 
+  address, 
+  count(*) as order_count 
+from 
+  orders 
+group by 
+  address 
+order by 
+  order_count desc;
+  select 
+  order_id, 
+  count(*) as c 
+from 
+  positions 
+group by 
+  order_id 
+order by 
+  c;
+  select 
+  status, 
+  count(*) as c 
+from 
+  orders 
+where 
+  address != 'Казань' 
+group by 
+  status;
+  select 
+  max(
+    avg(price)
+  ) as avg_price 
+from 
+  products 
+group by 
+  category;
+  select 
+  max(tmp.avg_price) 
+from 
+  (
+    select 
+      category as c, 
+      avg(price) as avg_price 
+    from 
+      products 
+    group by 
+      category
+  ) as tmp;
+  select 
+  name 
+from 
+  products 
+where 
+  id in (
+    select 
+      product_id 
+    from 
+      positions 
+    where 
+      positions.order_id = (
+        select 
+          id 
+        from 
+          orders 
+        where 
+          date = (
+            select 
+              max(date) 
+            from 
+              orders
+          )
+      )
+  );
+  select 
+  category, 
+  count(*) 
+from 
+  products 
+group by 
+  category 
+having 
+  count(*) > 3;
+  select 
+  category, 
+  count(*) 
+from 
+  products 
+where 
+  price > 100 
+group by 
+  category 
+having 
+  count(*) > 3;
+  select 
+  name 
+from 
+  clients 
+order by 
+  length(name);
+  select 
+  * 
+from 
+  orders 
+  join clients on orders.client_id = clients.id;
+  select 
+  * 
+from 
+  orders cross 
+  join clients;
+  select 
+  * 
+from 
+  orders full 
+  outer join clients on orders.client_id = clients.id;
+  select 
+  * 
+from 
+  orders 
+  left outer join clients on orders.client_id = clients.id;
+  select 
+  * 
+from 
+  clients 
+  right outer join orders on orders.client_id = clients.id;
+  select 
+  * 
+from 
+  clients 
+  left outer join orders on orders.client_id = clients.id 
+where 
+  orders.id is NULL;
+  select 
+  sum(pos.amount), 
+  prod.name 
+from 
+  positions as pos 
+  join orders as o on pos.order_id = o.id 
+  join products as prod on prod.id = pos.product_id 
+where 
+  o.client_id = 5 
+group by 
+  prod.id;
+  select 
+  products.name 
+from 
+  orders 
+  join positions on orders.id = positions.order_id 
+  join products on positions.product_id = products.id 
+where 
+  orders.date = (
+    select 
+      max(date) 
+    from 
+      orders
+  );
+  select 
+  phone, 
+  tmp.order_id 
+from 
+  clients 
+  join (
+    select 
+      orders.id as order_id, 
+      client_id 
+    from 
+      orders 
+      join positions on positions.order_id = orders.id 
+    where 
+      positions.product_id = 1 
+    union 
+    select 
+      orders.id, 
+      client_id 
+    from 
+      orders 
+    where 
+      address = 'Казань'
+  ) as tmp on tmp.client_id = clients.id;
